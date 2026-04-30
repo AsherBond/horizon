@@ -13,10 +13,9 @@
 # limitations under the License.
 
 import os
-from subprocess import call
 
+from babel.messages.frontend import CommandLineInterface
 from django.core.management.base import BaseCommand
-from setuptools.dist import Distribution
 
 
 DOMAINS = ['django', 'djangojs']
@@ -44,17 +43,6 @@ class Command(BaseCommand):
                                   "polluting the source code"))
 
     def handle(self, *args, **options):
-        cmd = ('python setup.py {quiet} extract_messages '
-               '-F babel-{domain}.cfg '
-               '--input-dirs {module} '
-               '-o {potfile}')
-        distribution = Distribution()
-        distribution.parse_config_files(distribution.find_config_files())
-
-        quiet = '-q' if int(options['verbosity']) == 0 else ''
-        if options['check_only']:
-            cmd += " ; rm {potfile}"
-
         for module in options['module']:
             for domain in options['domain']:
                 potfile = '{module}/locale/{domain}.pot'.format(module=module,
@@ -62,6 +50,14 @@ class Command(BaseCommand):
                 if not os.path.exists(potfile):
                     with open(potfile, 'wb') as f:
                         f.write(b'')
-
-                call(cmd.format(module=module, domain=domain, potfile=potfile,
-                                quiet=quiet), shell=True)
+                command = [
+                    'pybabel', 'extract',
+                    '-F', f'babel-{domain}.cfg',
+                    '--input-dirs', module,
+                    '-o', potfile,
+                ]
+                if int(options['verbosity']) == 0:
+                    command.insert(1, '-q')
+                CommandLineInterface().run(command)
+                if options['check_only']:
+                    os.remove(potfile)
