@@ -13,7 +13,7 @@
 
 - job:
     name: horizon-cross-manila-ui-python
-    parent: openstack-tox-py310
+    parent: openstack-tox-py311
     vars:
       zuul_work_dir: "{{ zuul.projects['opendev.org/openstack/manila-ui'].src_dir }}"
     required-projects:
@@ -29,7 +29,7 @@
 
 - job:
     name: horizon-cross-heat-dashboard-python
-    parent: openstack-tox-py310
+    parent: openstack-tox-py311
     vars:
       zuul_work_dir: "{{ zuul.projects['opendev.org/openstack/heat-dashboard'].src_dir }}"
     required-projects:
@@ -37,7 +37,7 @@
 
 - job:
     name: horizon-cross-magnum-ui-python
-    parent: openstack-tox-py310
+    parent: openstack-tox-py311
     vars:
       zuul_work_dir: "{{ zuul.projects['opendev.org/openstack/magnum-ui'].src_dir }}"
     required-projects:
